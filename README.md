@@ -1,5 +1,7 @@
 # ThalesDocsBot
-A Chatbot to help you with Thales Products by providing info from Documentation
+A Chatbot to help you with Thales Products by providing info from Documentation   
+
+   Built using [Streamlit](https://streamlit.io/), [Llama-Index](https://docs.llamaindex.ai/en/stable/) and [BeautifulSoup](https://beautiful-soup-4.readthedocs.io/en/latest/#:~:text=Beautiful%20Soup%20is%20a%20Python,hours%20or%20days%20of%20work.)
 
 
    
