@@ -10,5 +10,5 @@ Uses the latest GPT-4o Model
 
   **Usage:**   
       1. Add your OpenAI API key on line# 10   
-      2. pip3 install -r ThalesDocsReq.txt   
+      2. run `pip3 install -r ThalesDocsReq.txt` in terminal   
       3. run `streamlit run ThalesDocs.py` in terminal
