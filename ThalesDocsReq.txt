@@ -2,5 +2,9 @@ streamlit
 openai
 llama-index
 llama-index-readers-web
+llama-index-llms-ollama
+llama-index-embeddings-huggingface
+llama-index-postprocessor-flag-embedding-reranker
 beautifulsoup4
 requests
+playwright
