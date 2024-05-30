@@ -7,6 +7,7 @@ import openai
 from llama_index.postprocessor.flag_embedding_reranker import FlagEmbeddingReranker
 from llama_index.core.memory import ChatMemoryBuffer
 
+
 openai.api_key = 'OpenAI API Key'
 
 # Initialize global settings
@@ -32,9 +33,18 @@ if "messages" not in st.session_state.keys():
         {"role": "assistant", "content": "Ask me a question about Thales Documentation!"}
     ]
 
+
 # Load and index data from ThalesDocs
 @st.cache_resource(show_spinner=False)
 def load_data():
+    """
+    Load and index data from Markdown files in the 'markdown' directory.
+
+    This function reads Markdown files, loads their content, and builds a vector store index based on the documents.
+
+    Returns:
+        VectorStoreIndex: The vector store index created from the loaded documents.
+    """
     with st.spinner(text="Building and Loading Index – hang tight!"):
         # Define the directory containing the Markdown files
         markdown_directory = '../markdown'
