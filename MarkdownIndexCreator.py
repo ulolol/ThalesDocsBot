@@ -12,7 +12,7 @@ Settings.embed_model = HuggingFaceEmbedding(
     model_name="nomic-ai/nomic-embed-text-v1", trust_remote_code=True, 
     cache_folder='./HFCache'
 )
-Settings.node_parser = SentenceSplitter(chunk_size=512, chunk_overlap=20)
+Settings.node_parser = SentenceSplitter(chunk_size=2048, chunk_overlap=20)
 
 
 if __name__ == '__main__':
