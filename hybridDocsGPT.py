@@ -45,6 +45,13 @@ if "messages" not in st.session_state.keys():
 # Load and index data from Markdown files in the 'markdown' directory
 @st.cache_resource(show_spinner=False)
 def load_data():
+    """
+    Load and index data from Markdown files in the 'markdown' directory or load 
+    an existing index from disk.
+
+    Returns:
+        VectorStoreIndex: The loaded or newly created vector store index.
+    """
     persistent_dir = "ThalesDocsIndex"  # Define persistent directory
 
 
@@ -76,7 +83,6 @@ def load_data():
             return index
 
 
-# Add the main guard
 if __name__ == '__main__':
     #multiprocessing.freeze_support()  # Only necessary if you plan to freeze your script into an executable
     index = load_data()
