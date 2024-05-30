@@ -4,8 +4,8 @@ from llama_index.llms.openai import OpenAI
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.core.node_parser.text import SentenceSplitter
 import openai
-from llama_index.readers.web import BeautifulSoupWebReader
-
+from llama_index.postprocessor.flag_embedding_reranker import FlagEmbeddingReranker
+from llama_index.core.memory import ChatMemoryBuffer
 
 openai.api_key = 'OpenAI API Key'
 
@@ -20,6 +20,10 @@ system_prompt="""
 Settings.embed_model = OpenAIEmbedding(model="text-embedding-ada-002")
 Settings.node_parser = SentenceSplitter(chunk_size=2048, chunk_overlap=20)
 
+rerank = FlagEmbeddingReranker(model="BAAI/bge-reranker-base", top_n=7)
+
+chatmemory = ChatMemoryBuffer.from_defaults(token_limit=4096)
+
 # Initialize message history
 st.header("Chat with Thales Docs 💬 📚")
 
@@ -31,36 +35,43 @@ if "messages" not in st.session_state.keys():
 # Load and index data from ThalesDocs
 @st.cache_resource(show_spinner=False)
 def load_data():
-    with st.spinner(text="Loading and indexing ThalesDocs – hang tight!"):
-        # Define the URL for ThalesDocs
-        URL = "https://www.thalesdocs.com"
-        
-        # Use BeautifulSoupWebReader to fetch and parse the content
-        loader = BeautifulSoupWebReader()
-        documents = loader.load_data(urls=[URL])
-        
-        # Create the vector store index
-        index = VectorStoreIndex.from_documents(documents)
+    with st.spinner(text="Building and Loading Index – hang tight!"):
+        # Define the directory containing the Markdown files
+        markdown_directory = '../markdown'
+
+        # Initialize SimpleDirectoryReader to read Markdown files
+        reader = SimpleDirectoryReader(markdown_directory, required_exts=[".md"])
+
+        # Load documents from the directory
+        documents = reader.load_data(show_progress=True, num_workers=12)
+
+        # Create the vector store index from the loaded documents
+        index = VectorStoreIndex.from_documents(documents, show_progress=True, 
+        insert_batch_size=2048)
         return index
 
-index = load_data()
 
-# Create the chat engine
-chat_engine = index.as_chat_engine(chat_mode="condense_question", verbose=True)
+if __name__ == '__main__':
+    #multiprocessing.freeze_support()  # Only necessary if you plan to freeze your script into an executable
+    index = load_data()
 
-# Prompt for user input and display message history
-if prompt := st.chat_input("Your question"):
-    st.session_state.messages.append({"role": "user", "content": prompt})
+    # Create the chat engine
+    chat_engine = index.as_chat_engine(chat_mode="condense_plus_context", 
+    verbose=True, node_postprocessors=[rerank], streaming=True, memory=chatmemory)
 
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
+    # Prompt for user input and display message history
+    if prompt := st.chat_input("Your question"):
+        st.session_state.messages.append({"role": "user", "content": prompt})
 
-# Pass query to chat engine and display response
-if st.session_state.messages[-1]["role"] != "assistant":
-    with st.chat_message("assistant"):
-        with st.spinner("Thinking..."):
-            response = chat_engine.chat(prompt)
-            st.write(response.response)
-            message = {"role": "assistant", "content": response.response}
-            st.session_state.messages.append(message)
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.write(message["content"])
+
+    # Pass query to chat engine and display response
+    if st.session_state.messages[-1]["role"] != "assistant":
+        with st.chat_message("assistant"):
+            with st.spinner("Thinking..."):
+                response = chat_engine.chat(prompt)
+                st.write(response.response)
+                message = {"role": "assistant", "content": response.response}
+                st.session_state.messages.append(message)
