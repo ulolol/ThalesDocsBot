@@ -7,7 +7,7 @@ import openai
 from llama_index.readers.web import BeautifulSoupWebReader
 
 
-openai.api_key = 'YOUR-OPENAI-API-KEY-HERE'
+openai.api_key = 'OpenAI API Key'
 
 # Initialize global settings
 Settings.llm = OpenAI(model="gpt-4o", api_key=openai.api_key, 
@@ -18,7 +18,7 @@ system_prompt="""
     Do not ask the user to check the website for more details; include all necessary information in your response.
     """)
 Settings.embed_model = OpenAIEmbedding(model="text-embedding-ada-002")
-Settings.node_parser = SentenceSplitter(chunk_size=512, chunk_overlap=20)
+Settings.node_parser = SentenceSplitter(chunk_size=2048, chunk_overlap=20)
 
 # Initialize message history
 st.header("Chat with Thales Docs 💬 📚")
