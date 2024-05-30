@@ -16,4 +16,10 @@ Uses the latest GPT-4o Model
       3. Initialize Playwright by running `playwright install` in terminal   
       4. run `time python3 dataPrimer.py` in terminal   
       5. run `time python3 MarkdownIndexCreator.py` in Terminal   
-      6. run `streamlit run {X}.py` in terminal (X = hybrid / openAI / Ollama)
+      6. run `streamlit run {X}.py` in terminal (X = hybrid / OpenAI / Ollama)   
+
+NOTE:    
+   hybrid: hybridDocsGPT.py   
+   OpenAI: ThalesDocsGPT.py   
+   Ollama: MarkDownOllama_v3.py
+
