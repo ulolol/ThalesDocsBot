@@ -50,7 +50,7 @@ def convert_html_to_markdown(html_content):
     str: The converted Markdown content.
     """
     h = html2text.HTML2Text()
-    h.ignore_links = False  # Keep links in the converted text
+    h.ignore_links = True  # remove links in the converted text
     return h.handle(html_content)
 
 def save_to_markdown(search_results, query):
