@@ -1,0 +1,5 @@
+# Ignore the HFCache directory
+HFCache/
+
+# Ignore the markdown directory
+markdown/
