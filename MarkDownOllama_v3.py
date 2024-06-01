@@ -9,12 +9,17 @@ from llama_index.core import StorageContext, load_index_from_storage
 import os
 import nest_asyncio
 
+#local Imports
+import webFetch
+import dataPrimer
+
+
 nest_asyncio.apply()
 
 
 # Initialize global settings
 Settings.llm = Ollama(
-    model="neural-chat:latest",
+    model="phi3-128k:latest",
     base_url="http://localhost:11434",
     request_timeout=120.0,
     ollama_additional_kwargs={
@@ -106,6 +111,19 @@ if __name__ == '__main__':
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 response = chat_engine.chat(prompt)
+
+                #perform a Web Search on ThalesDocs site if data not in Index
+                if "The documents provided do not contain information" or \
+                    "The index provided does not contain information" in response:
+                    response = "Data not found in Index.... \n \
+                    Checking ThalesDocs site for latest data...."
+                    st.write(response)
+                    web_data = webFetch.fetch_and_save_articles(prompt)
+                    web_data = dataPrimer.clean_markdown_file(web_data, is_file=False)
+                    web_data = web_data[:10000] if len(web_data) > 10000 else web_data
+                    response = chat_engine.chat(f"{prompt} \n \
+                        Relevant Context: {web_data}")
+
                 st.write(response.response)
                 message = {"role": "assistant", "content": response.response}
                 st.session_state.messages.append(message)

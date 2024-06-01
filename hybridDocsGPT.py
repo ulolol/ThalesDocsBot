@@ -10,6 +10,11 @@ import openai
 import os
 import nest_asyncio
 
+#local Imports
+import webFetch
+import dataPrimer
+
+
 nest_asyncio.apply()
 
 
@@ -104,6 +109,21 @@ if __name__ == '__main__':
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 response = chat_engine.chat(prompt)
+
+                #perform a Web Search on ThalesDocs site if data not in Index
+                if "The documents provided do not contain information" or \
+                    "The index provided does not contain information" in response:
+                    response = "Data not found in Index.... \n \
+                    Checking ThalesDocs site for latest data...."
+                    st.write(response)
+                    web_data = webFetch.fetch_and_save_articles(prompt)
+                    web_data = dataPrimer.clean_markdown_file(web_data, is_file=False)
+                    #Use only first 3000 chars as context, to prevent 
+                    #too much data being sent to GPT
+                    web_data = web_data[:3000] if len(web_data) > 3000 else web_data
+                    response = chat_engine.chat(f"{prompt} \n \
+                        Relevant Context: {web_data}")
+
                 st.write(response.response)
                 message = {"role": "assistant", "content": response.response}
                 st.session_state.messages.append(message)
