@@ -3,3 +3,9 @@ HFCache/
 
 # Ignore the markdown directory
 markdown/
+
+# Ignore pycache
+__pycache__
+
+# Ignore Index directory
+ThalesDocsIndex/
